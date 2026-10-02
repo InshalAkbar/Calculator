@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cinematic Dark Neumorphic Calculator</title>
+    
+    <!-- Google Fonts for sleek typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --bg-color: #171b21;
+            --calc-bg: #1d222b;
+            --display-bg: #14171d;
+            --text-neon: #82f611;
+            --text-num: #ffffff;
+            --text-op: #6dee0a;
+            --equal-btn: #fb7c14;
+            --equal-btn-glow: rgba(251, 124, 20, 0.4);
+            
+            /* Neumorphic Shadow Variables for Buttons */
+            --neu-shadow-out: 8px 8px 16px #12151b, -8px -8px 16px #282f3b;
+            --neu-shadow-hover: 10px 10px 20px #101318, -10px -10px 20px #2a313e;
+            --neu-shadow-in: inset 5px 5px 10px #12151b, inset -5px -5px 10px #282f3b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        body {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #12151a 0%, #1e242d 100%);
+            font-family: 'Poppins', sans-serif;
+            overflow: hidden;
+        }
+
+        .calculator {
+            width: 380px;
+            max-width: 90vw;
+            padding: 32px 28px;
+            background: var(--calc-bg);
+            border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 
+                25px 25px 50px #0e1014,
+                -25px -25px 50px #2c3442,
+                inset 0px 1px 1px rgba(255, 255, 255, 0.08);
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Screen Display Box - Matched to Screenshot 1 */
+        .display-container {
+            width: 100%;
+            height: 100px;
+            padding: 16px 20px;
+            background: var(--display-bg);
+            border-radius: 20px;
+            box-shadow: inset 6px 6px 12px #0c0e12, inset -6px -6px 12px #1c2028;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+
+        .previous-expr {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 14px;
+            color: rgba(130, 246, 17, 0.5);
+            min-height: 20px;
+            letter-spacing: 1px;
+            text-align: right;
+            word-break: break-all;
+            margin-bottom: 4px;
+        }
+
+        .input-box {
+            width: 100%;
+            border: none;
+            outline: none;
+            background: transparent;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 38px;
+            font-weight: 700;
+            color: var(--text-neon);
+            text-align: right;
+            letter-spacing: 1.5px;
+            text-shadow: 0 0 12px rgba(130, 246, 17, 0.35);
+        }
+
+        .input-box::placeholder {
+            color: var(--text-neon);
+            opacity: 0.8;
+        }
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        button {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: none;
+            outline: none;
+            background: var(--calc-bg);
+            color: var(--text-num);
+            font-family: 'Poppins', sans-serif;
+            font-size: 20px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: var(--neu-shadow-out);
+            transition: all 0.2s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Hover & Active Lighting Transitions */
+        button:hover {
+            box-shadow: var(--neu-shadow-hover);
+            transform: translateY(-2px);
+        }
+
+        button:active, button.active {
+            box-shadow: var(--neu-shadow-in);
+            transform: translateY(1px);
+        }
+
+        /* Green text operator buttons */
+        button.operator {
+            color: var(--text-op);
+            font-weight: 600;
+        }
+
+        /* Orange equal button */
+        button.equalBtn {
+            background: var(--equal-btn);
+            color: #ffffff;
+            font-size: 24px;
+            font-weight: 700;
+            box-shadow: 
+                0 6px 20px var(--equal-btn-glow),
+                5px 5px 15px #12151b;
+        }
+
+        button.equalBtn:hover {
+            box-shadow: 
+                0 8px 25px var(--equal-btn-glow),
+                0 0 15px rgba(251, 124, 20, 0.6);
+            transform: translateY(-2px);
+        }
+
+        button.equalBtn:active, button.equalBtn.active {
+            transform: translateY(1px);
+            box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.4);
+        }
+
+        /* Mobile Adjustments */
+        @media (max-width: 400px) {
+            .calculator {
+                padding: 24px 20px;
+                border-radius: 26px;
+            }
+            button {
+                width: 55px;
+                height: 55px;
+                font-size: 18px;
+            }
+            .buttons-grid {
+                gap: 14px;
+            }
+            .input-box {
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="calculator">
+        <div class="display-container">
+            <div class="previous-expr" id="prevExpr"></div>
+            <input type="text" placeholder="0" id="inputBox" readonly>
+        </div>
+
+        <div class="buttons-grid">
+            <button class="operator" data-action="AC">AC</button>
+            <button class="operator" data-action="DEL">DEL</button>
+            <button class="operator" data-val="%">%</button>
+            <button class="operator" data-val="/">/</button>
+
+            <button data-val="7">7</button>
+            <button data-val="8">8</button>
+            <button data-val="9">9</button>
+            <button class="operator" data-val="*">*</button>
+
+            <button data-val="4">4</button>
+            <button data-val="5">5</button>
+            <button data-val="6">6</button>
+            <button class="operator" data-val="-">-</button>
+
+            <button data-val="1">1</button>
+            <button data-val="2">2</button>
+            <button data-val="3">3</button>
+            <button class="operator" data-val="+">+</button>
+
+            <button data-val="00">00</button>
+            <button data-val="0">0</button>
+            <button data-val=".">.</button>
+            <button class="equalBtn" data-action="=">=</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('inputBox');
+            const prevExpr = document.getElementById('prevExpr');
+            const buttons = document.querySelectorAll('button');
+
+            let currentExpression = "";
+            let evaluated = false;
+
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const val = button.getAttribute('data-val');
+                    const action = button.getAttribute('data-action');
+                    handleInput(val, action);
+                });
+            });
+
+            function handleInput(val, action) {
+                if (action === 'AC') {
+                    currentExpression = "";
+                    input.value = "";
+                    prevExpr.innerText = "";
+                    evaluated = false;
+                    return;
+                }
+
+                if (action === 'DEL') {
+                    if (evaluated) {
+                        currentExpression = "";
+                        input.value = "";
+                        prevExpr.innerText = "";
+                        evaluated = false;
+                        return;
+                    }
+                    currentExpression = currentExpression.toString().slice(0, -1);
+                    input.value = currentExpression;
+                    return;
+                }
+
+                if (action === '=') {
+                    calculateResult();
+                    return;
+                }
+
+                if (val) {
+                    if (evaluated) {
+                        if (['+', '-', '*', '/', '%'].includes(val)) {
+                            evaluated = false;
+                        } else {
+                            currentExpression = "";
+                            evaluated = false;
+                        }
+                    }
+
+                    // Prevent entering multiple consecutive operators
+                    const lastChar = currentExpression.slice(-1);
+                    if (['+', '-', '*', '/', '%'].includes(lastChar) && ['+', '-', '*', '/', '%'].includes(val)) {
+                        currentExpression = currentExpression.slice(0, -1) + val;
+                    } else {
+                        currentExpression += val;
+                    }
+
+                    input.value = currentExpression;
+                }
+            }
+
+            function calculateResult() {
+                if (!currentExpression) return;
+
+                try {
+                    let sanitized = currentExpression.replace(/%/g, '/100');
+
+                    // Math evaluation safely
+                    let result = new Function(`'use strict'; return (${sanitized})`)();
+
+                    if (isNaN(result) || !isFinite(result)) {
+                        input.value = "Error";
+                        return;
+                    }
+
+                    if (typeof result === 'number' && !Number.isInteger(result)) {
+                        result = parseFloat(result.toFixed(8));
+                    }
+
+                    prevExpr.innerText = currentExpression;
+                    currentExpression = result.toString();
+                    input.value = currentExpression;
+                    evaluated = true;
+                } catch (err) {
+                    input.value = "Error";
+                }
+            }
+
+            // Keyboard navigation
+            document.addEventListener('keydown', (e) => {
+                let key = e.key;
+
+                if (key >= '0' && key <= '9') {
+                    animateKey(key);
+                    handleInput(key, null);
+                } else if (key === '.') {
+                    animateKey('.');
+                    handleInput('.', null);
+                } else if (key === '+') {
+                    animateKey('+');
+                    handleInput('+', null);
+                } else if (key === '-') {
+                    animateKey('-');
+                    handleInput('-', null);
+                } else if (key === '*') {
+                    animateKey('*');
+                    handleInput('*', null);
+                } else if (key === '/') {
+                    e.preventDefault();
+                    animateKey('/');
+                    handleInput('/', null);
+                } else if (key === '%') {
+                    animateKey('%');
+                    handleInput('%', null);
+                } else if (key === 'Enter' || key === '=') {
+                    e.preventDefault();
+                    animateKey('=');
+                    handleInput(null, '=');
+                } else if (key === 'Backspace') {
+                    animateKey('DEL');
+                    handleInput(null, 'DEL');
+                } else if (key === 'Escape') {
+                    animateKey('AC');
+                    handleInput(null, 'AC');
+                }
+            });
+
+            function animateKey(identifier) {
+                buttons.forEach(btn => {
+                    if (btn.getAttribute('data-val') === identifier || btn.getAttribute('data-action') === identifier) {
+                        btn.classList.add('active');
+                        setTimeout(() => btn.classList.remove('active'), 150);
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>
